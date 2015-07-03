@@ -21,37 +21,64 @@
 /*Colocaremos aqui los  textos correspondientes para cada mensaje,
 Los guardamos en memoria debido a que no se usaran mas datos de los necesarios
 y asi no inlcuir un sistema de lectura de archivos*/
-char TEX_INTRO[]           = "Bienvenido a el Asistente de tareas v1.1\nSoy capas de ayudar a la organizacion de proyectos pequeños solo necesita introducir el nombre de su proyecto y acontinuacion darme las tareas que usted crea necesarias para la realizacion de su proyecto mi funcion es organizar esas tareas conforme a un algotirmo especifico\nA continuacion le muestro un pequeno menu.\n" ;
+char TEX_INTRO[]           = "Bienvenido a el Asistente de tareas v1.1\nSoy capas de ayudar a la organizacion de proyectos pequeños solo necesita introducir el nombre de su proyecto y acontinuacion darme las tareas que usted crea necesarias para la realizacion de su proyecto mi funcion es organizar esas tareas conforme a un algotirmo especifico\nEs importante que lea los textos de ayuda antes de utilizar cualquier funcion, esto le ayudara a sacarle el mayor partido al programa\n";
 char TEXTO_PEDIR_PRONO[]   = "Todo proyecto debe tener un nombre, debemos ponerle un nombre muy descriptivo y original\nIntroduce el nombre del proyecto";
-char TEXTO_PEDIR_PRODE[]   = "Ahora debemos describir brebemente el proyecto en cuestion, esto es util para tener una idea clara de que vamos a hacer\nPor favor introdusca la descripcion de su proyecto";
+char TEXTO_PEDIR_PRODE[]   = "Ahora debemos describir brevemente el proyecto en cuestion, esto es util para tener una idea clara de que vamos a hacer\nPor favor introduzca la descripcion de su proyecto";
 char TEXTO_OPC[]           = "=====Opciones=====\n"
                              "N : Nueva tarea. \n"
                              "B : Borrar tarea.\n"
                              "E : Editar tarea.\n"
                              "M : Mostrar tareas.\n"
+                             "P : Proyecto nuevo.\n"
                              "H : Ayuda\n"
                              "S : Salir\n"
                              "==================\n"
                              "Seleccione una opcion (mayuscula):\n";
-char TEXTO_AYUDAS[]          = "";
+char TEXTO_AYUDAS[]        = "Nueva tarea :\n"
+                             "Lo mas importante de su proyecto son las tareas, introduzca todas las tareas posibles de una sola vez, despues podra borrarlas y modificarlas segun le convenga\n"
+                             "Borrar tarea:\n"
+                             "Podras borrar las tareas que quieras en cualquier momento, selecciona esta opcion si alguna de las tareas no te agrada o la haz completado, borrar items de tu lista de tareas te ayudara a mantener claro lo que tienes que hacer\n"
+                             "Editar tarea\n"
+                             "Edita la tarea elegida, al editar una tarea tambien sera reubicada en la lista. Cuando no estes convensido de alguna tarea, editala cuantas veces quieras, esto ayudara a reformar el proyecto y a optimizar tu trabajo"
+                             "Proyecto nuevo:\n"
+                             "BORRA el proyecto actual y realiza uno nuevo.\n CUIDADO numgun dato sera guardado"
+                             "Ayuda:\n"
+                             "Imprime este texto de ayuda\n"
+                             "Salir:"
+                             "Sale del programa CUIDADO ningun dato es guardado en el programa";
+
 char TEXTO_MENU_NTAREA[]   = "=====Opciones=====\n"
                              "==Agregar tareas==\n"
                              "N : Nueva tarea\n"
                              "H : Ayuda\n"
-                             "S : menu principal\n";
-char TEXTO_AYUDA_ITAREAS[] = "----";
+                             "S : menu principal\n"
+                             "==================\n"
+                             "Seleccione una opcion:\n";
+char TEXTO_AYUDA_ITAREAS[] = " Para ingresar una nueva tarea:\n Es muy importante que uses las palabras clave al ingresar una de tus tareas "
+                             "investigar\n"
+                             "redactar\n"
+                             "resolver\n"
+                             "conseguir\n"
+                             "hacer\n"
+                             "revisar\n"
+                             "organizar\n"
+                             "comunicar\n";
 char TEXTO_MENU_BTAREA[]   = "=====Opciones=====\n"
                              "==BORRAR  tareas==\n"
                              "B : Borrar tarea\n"
                              "H : Ayuda\n"
-                             "S : menu principal\n";
-char TEXTO_AYUDA_BTAREAS[] = "----";
+                             "S : menu principal\n"
+                             "==================\n"
+                             "Seleccione una opcion:\n";
+char TEXTO_AYUDA_BTAREAS[] = "Borra de la lista las tareas que desees solo introduce el numero de la tarea a borrar en la lista\n";
 char TEXTO_MENU_ETAREA[]   = "=====Opciones=====\n"
-                             "==BORRAR  tareas==\n"
-                             "B : Borrar tarea\n"
+                             "==Editar  tareas==\n"
+                             "E : Borrar tarea\n"
                              "H : Ayuda\n"
-                             "S : menu principal\n";
-char TEXTO_AYUDA_ETAREAS[] = "----";
+                             "S : menu principal\n"
+                             "==================\n"
+                             "Seleccione una opcion:\n";
+char TEXTO_AYUDA_ETAREAS[] = "Edita la tarea que desees, recuerda usar las palabras clave mencionadas antes al modificar tus tareas, la tarea modificada no concervara su lugar en la lista.";
 
 
 /*Tenemos dos arrays relacionados para colocar las palabras clave para valorar tareas
@@ -89,6 +116,7 @@ void clean_stdin(void);
 void readLine(char texto[], int tamano);
 void tareaNueva(char tarrea[][500], int valor[]);
 int valorar(char tarea[], int valor[] );
+int ifMenores(int valor[], int pos, int menor);
 void borrarTarea(char tarea[][500], int valor[]);
 void mostrarTareas(char tarea[][500], int valor[]);
 int posicionAbs(int valor[], int pos);
@@ -288,12 +316,14 @@ int valorar(char tarea[], int valor[]){
   la compara con nuestra trarea en cuestion solo hasta la primera palabra, si son iguales
   toma a isthis como cierto y termina la iteracion*/
   for(x=0; x < 8 ; x++){
-    if(tarea[i] == ' ' || tarea[i] == '\0' || tarea[i] == '\n'){
-      break;
-    }
+
     for(i=0; i<50; i++ ){
+    
+      if(tarea[i] == ' ' || tarea[i] == '\0' || tarea[i] == '\n'){
+        break;
+      }
       if( tarea[i] == palabras[x][i]){
-        isthis = 1;
+                isthis = 1;
       }else{
         isthis = 0;
         break;
@@ -315,13 +345,10 @@ int valorar(char tarea[], int valor[]){
       i=-1;
     }
   }
-
   return vvalor;
-
 }
 
 void borrarTarea(char tarea[][500], int valor[]){
-  mostrarTareas(tarea, valor);
   int salir=0; 
   char opc=0;
   int err=0;
@@ -363,14 +390,32 @@ void borrarTarea(char tarea[][500], int valor[]){
 
 void mostrarTareas(char tarea[][500], int valor[]){
   int i;
-  int menor = -1;
+  int menor =  0;
+  int posRel = 0;
+
+  printf("////////////////////////////////////////////////////////////////////////////////\n");
   for(i=0; i<20; i++){
     if(valor[i] > menor){
-      menor = valor[i];
-      printf("%2d . %s", i+1, tarea[i]);
-      i=-1;
+      if( !(ifMenores(valor,i,menor) ) ){
+        menor = valor[i];
+        posRel++;
+        printf("===%d :: %s\n", posRel, tarea[i] );
+        i=-1;
+      }
+    }  
+  }
+
+  printf("////////////////////////////////////////////////////////////////////////////////\n");
+}
+
+int ifMenores(int valor[], int pos, int menor){
+  int mayor = valor[pos];
+  for(pos++;pos<20;pos++){
+    if( (valor[pos] > menor)  && (mayor > valor[pos]) ){
+      return 1;
     }
   }
+  return 0;
 }
 
 int posicionAbs(int valor[], int pos) {
@@ -379,19 +424,16 @@ int posicionAbs(int valor[], int pos) {
   int menor = 0;
   for(i=0; i<20; i++){
     if(valor[i] > menor){
-      menor = valor[i];
-      posRel++;
-      if(posRel ==  pos){
-        break;
+      if( !(ifMenores(valor,i,menor) ) ){
+        menor = valor[i];
+        posRel++;
+        i=-1;
       }
-      i=-1;
-    }
   }
   return posRel;
 }
 
 void editarTarea(char tarea[][500], int valor[]){
-  mostrarTareas(tarea, valor);
   int salir=0; 
   char opc=0;
   int err=0;
@@ -407,7 +449,7 @@ void editarTarea(char tarea[][500], int valor[]){
     clean_stdin();
 
     switch(opc){
-      case 'B':
+      case 'E':
       mostrarTareas(tarea, valor);
       printf("Numero de tarea que deseas Editar.\n");
       scanf("%d", &pos);
@@ -427,7 +469,7 @@ void editarTarea(char tarea[][500], int valor[]){
       salir = 1;
       break;
       default:
-      printf("Esa es una opcion incorrecta");
+      printf("Esa es una opcion incorrecta\n");
       err=1;
     }
     
