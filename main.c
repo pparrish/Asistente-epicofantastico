@@ -33,6 +33,7 @@ char TEXTO_OPC[]           = "=====Opciones=====\n"
                              "S : Salir\n"
                              "==================\n"
                              "Seleccione una opcion (mayuscula):\n";
+char TEXTO_AYUDAS[]          = "";
 char TEXTO_MENU_NTAREA[]   = "=====Opciones=====\n"
                              "==Agregar tareas==\n"
                              "N : Nueva tarea\n"
@@ -45,7 +46,12 @@ char TEXTO_MENU_BTAREA[]   = "=====Opciones=====\n"
                              "H : Ayuda\n"
                              "S : menu principal\n";
 char TEXTO_AYUDA_BTAREAS[] = "----";
-
+char TEXTO_MENU_ETAREA[]   = "=====Opciones=====\n"
+                             "==BORRAR  tareas==\n"
+                             "B : Borrar tarea\n"
+                             "H : Ayuda\n"
+                             "S : menu principal\n";
+char TEXTO_AYUDA_ETAREAS[] = "----";
 
 
 /*Tenemos dos arrays relacionados para colocar las palabras clave para valorar tareas
@@ -85,6 +91,11 @@ void tareaNueva(char tarrea[][500], int valor[]);
 int valorar(char tarea[], int valor[] );
 void borrarTarea(char tarea[][500], int valor[]);
 void mostrarTareas(char tarea[][500], int valor[]);
+int posicionAbs(int valor[], int pos);
+void editarTarea(char tarea[][500], int valor[]);
+void borrarTodo(char tarea[][500], int valor[]);
+
+
 int main(){
 
   char salir=0;
@@ -145,6 +156,7 @@ int main(){
 
         /*Editar tarea*/
         case 'E':
+        editarTarea(tarea, valor);
         break;
 
         /*Mostrar tareas*/
@@ -154,10 +166,15 @@ int main(){
 
         /*P Nuevo proyecto*/
         case 'P':
+        nombreProyecto[0] = '\0';
+        descProyecto[0]   = '\0';
+        borrarTodo(tarea, valor);
+        isProDefined = 0;
         break;
 
         /*Help - ayudas*/
         case 'H':
+        printf("%s\n", TEXTO_AYUDAS );
         break;
 
         /*Salir del programa*/
@@ -308,6 +325,7 @@ void borrarTarea(char tarea[][500], int valor[]){
   int salir=0; 
   char opc=0;
   int err=0;
+  int pos;
   do{
     if(!err){
       printf("%s\n", TEXTO_MENU_BTAREA); 
@@ -319,7 +337,14 @@ void borrarTarea(char tarea[][500], int valor[]){
     clean_stdin();
 
     switch(opc){
-      case 'B':  
+      case 'B':
+      mostrarTareas(tarea, valor);
+      printf("Numero de tarea que deseas borrar.\n");
+      scanf("%d", &pos);
+      clean_stdin();
+      pos = posicionAbs(valor, pos) - 1;
+      tarea[pos][0] = '\0';
+      valor[pos]    = 0;
       break;
       case 'H':
       printf("%s\n", TEXTO_AYUDA_BTAREAS );
@@ -347,3 +372,77 @@ void mostrarTareas(char tarea[][500], int valor[]){
     }
   }
 }
+
+int posicionAbs(int valor[], int pos) {
+  int i;
+  int posRel = 0;
+  int menor = 0;
+  for(i=0; i<20; i++){
+    if(valor[i] > menor){
+      menor = valor[i];
+      posRel++;
+      if(posRel ==  pos){
+        break;
+      }
+      i=-1;
+    }
+  }
+  return posRel;
+}
+
+void editarTarea(char tarea[][500], int valor[]){
+  mostrarTareas(tarea, valor);
+  int salir=0; 
+  char opc=0;
+  int err=0;
+  int pos;
+  do{
+    if(!err){
+      printf("%s\n", TEXTO_MENU_ETAREA); 
+    }else{
+       err=0;
+    }
+
+    scanf("%c", &opc);
+    clean_stdin();
+
+    switch(opc){
+      case 'B':
+      mostrarTareas(tarea, valor);
+      printf("Numero de tarea que deseas Editar.\n");
+      scanf("%d", &pos);
+      clean_stdin();
+      pos = posicionAbs(valor, pos) - 1;
+      tarea[pos][0] = '\0' ;
+      valor[pos]    = 0;
+      printf("Ingrese la tarea:\n");
+        readLine( tarea[pos], 500 );
+        valor[pos] = valorar( tarea[pos], valor );
+        cViejas++;
+      break;
+      case 'H':
+      printf("%s\n", TEXTO_AYUDA_ETAREAS );
+      break;
+      case 'S':
+      salir = 1;
+      break;
+      default:
+      printf("Esa es una opcion incorrecta");
+      err=1;
+    }
+    
+  }while(!salir);
+
+}
+
+void borrarTodo(char tarea[][500], int valor[]){
+  int i;
+
+  for(i = 0 ; i<20; i++){
+    tarea[i][0] = '\0';
+    valor[i]    = 0;
+  }
+
+}
+
+
