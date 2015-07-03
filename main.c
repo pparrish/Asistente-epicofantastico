@@ -41,12 +41,11 @@ char TEXTO_AYUDAS[]        = "Nueva tarea :\n"
                              "Editar tarea\n"
                              "Edita la tarea elegida, al editar una tarea tambien sera reubicada en la lista. Cuando no estes convensido de alguna tarea, editala cuantas veces quieras, esto ayudara a reformar el proyecto y a optimizar tu trabajo"
                              "Proyecto nuevo:\n"
-                             "BORRA el proyecto actual y realiza uno nuevo.\n CUIDADO numgun dato sera guardado"
+                             "BORRA el proyecto actual y realiza uno nuevo.\n CUIDADO numgun dato sera guardado\n"
                              "Ayuda:\n"
                              "Imprime este texto de ayuda\n"
-                             "Salir:"
-                             "Sale del programa CUIDADO ningun dato es guardado en el programa";
-
+                             "Salir:\n"
+                             "Sale del programa CUIDADO ningun dato es guardado en el programa\n";
 char TEXTO_MENU_NTAREA[]   = "=====Opciones=====\n"
                              "==Agregar tareas==\n"
                              "N : Nueva tarea\n"
@@ -54,7 +53,7 @@ char TEXTO_MENU_NTAREA[]   = "=====Opciones=====\n"
                              "S : menu principal\n"
                              "==================\n"
                              "Seleccione una opcion:\n";
-char TEXTO_AYUDA_ITAREAS[] = " Para ingresar una nueva tarea:\n Es muy importante que uses las palabras clave al ingresar una de tus tareas "
+char TEXTO_AYUDA_ITAREAS[] = " Para ingresar una nueva tarea:\n Es muy importante que uses las palabras clave al ingresar una de tus tareas \n"
                              "investigar\n"
                              "redactar\n"
                              "resolver\n"
@@ -78,7 +77,7 @@ char TEXTO_MENU_ETAREA[]   = "=====Opciones=====\n"
                              "S : menu principal\n"
                              "==================\n"
                              "Seleccione una opcion:\n";
-char TEXTO_AYUDA_ETAREAS[] = "Edita la tarea que desees, recuerda usar las palabras clave mencionadas antes al modificar tus tareas, la tarea modificada no concervara su lugar en la lista.";
+char TEXTO_AYUDA_ETAREAS[] = "Edita la tarea que desees, recuerda usar las palabras clave mencionadas antes al modificar tus tareas, la tarea modificada no concervara su lugar en la lista.\n";
 
 
 /*Tenemos dos arrays relacionados para colocar las palabras clave para valorar tareas
@@ -369,7 +368,7 @@ void borrarTarea(char tarea[][500], int valor[]){
       printf("Numero de tarea que deseas borrar.\n");
       scanf("%d", &pos);
       clean_stdin();
-      pos = posicionAbs(valor, pos) - 1;
+      pos = posicionAbs(valor, pos);
       tarea[pos][0] = '\0';
       valor[pos]    = 0;
       break;
@@ -427,10 +426,14 @@ int posicionAbs(int valor[], int pos) {
       if( !(ifMenores(valor,i,menor) ) ){
         menor = valor[i];
         posRel++;
+        if(posRel == pos){
+          return i;
+        }
         i=-1;
       }
+    }
   }
-  return posRel;
+  return 0;
 }
 
 void editarTarea(char tarea[][500], int valor[]){
@@ -454,7 +457,7 @@ void editarTarea(char tarea[][500], int valor[]){
       printf("Numero de tarea que deseas Editar.\n");
       scanf("%d", &pos);
       clean_stdin();
-      pos = posicionAbs(valor, pos) - 1;
+      pos = posicionAbs(valor, pos);
       tarea[pos][0] = '\0' ;
       valor[pos]    = 0;
       printf("Ingrese la tarea:\n");
@@ -479,12 +482,14 @@ void editarTarea(char tarea[][500], int valor[]){
 
 void borrarTodo(char tarea[][500], int valor[]){
   int i;
-
+  int x;
   for(i = 0 ; i<20; i++){
-    tarea[i][0] = '\0';
+
+    for(x=0; x<500; x++){
+      tarea[i][x] = '\0';
+    }
     valor[i]    = 0;
   }
-
 }
 
 
