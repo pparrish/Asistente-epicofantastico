@@ -39,11 +39,19 @@ char TEXTO_MENU_NTAREA[]   = "=====Opciones=====\n"
                              "H : Ayuda\n"
                              "S : menu principal\n";
 char TEXTO_AYUDA_ITAREAS[] = "----";
+char TEXTO_MENU_BTAREA[]   = "=====Opciones=====\n"
+                             "==BORRAR  tareas==\n"
+                             "B : Borrar tarea\n"
+                             "H : Ayuda\n"
+                             "S : menu principal\n";
+char TEXTO_AYUDA_BTAREAS[] = "----";
+
+
 
 /*Tenemos dos arrays relacionados para colocar las palabras clave para valorar tareas
 y tenemos el valor de dichas palabras clave agregaremos tantas como sea necesarias para
 el funcionamiento del programa*/
-char palabras[][50] = { "investigar",
+char palabras[8][50] = { "investigar",
                         "redactar",
                         "resolver",
                         "conseguir",
@@ -51,7 +59,7 @@ char palabras[][50] = { "investigar",
                         "revisar",
                         "organizar",
                         "comunicar",
-                        "" };
+                        };
 int vPalabras[] = { 10,
                     20,
                     30,
@@ -60,7 +68,7 @@ int vPalabras[] = { 10,
                     60,
                     25,
                     15,
-                    -1 };
+                    -2 };
 
 
 /*Un contador gloglal que le da un valor  n +1 para que las tareas mas viejas tengan una
@@ -73,9 +81,10 @@ int cViejas = 0;
 /*FFlush*/
 void clean_stdin(void);
 void readLine(char texto[], int tamano);
-void tareaNueva();
-int valorar(char * tarea);
-
+void tareaNueva(char tarrea[][500], int valor[]);
+int valorar(char tarea[], int valor[] );
+void borrarTarea(char tarea[][500], int valor[]);
+void mostrarTareas(char tarea[][500], int valor[]);
 int main(){
 
   char salir=0;
@@ -87,7 +96,7 @@ int main(){
 
   /*Las tareas y los valores de dichas tareas que se mostraran en nuestro programa*/
   char tarea[20][500] = {""};
-  char valor[20] = {0};
+  int valor[20] = {0};
 
   printf("%s\n", TEX_INTRO);
 
@@ -131,6 +140,7 @@ int main(){
 
         /*Borrar tarea*/
         case 'B':
+        borrarTarea(tarea, valor);
         break;
 
         /*Editar tarea*/
@@ -139,6 +149,7 @@ int main(){
 
         /*Mostrar tareas*/
         case 'M':
+        mostrarTareas(tarea, valor);
         break;
 
         /*P Nuevo proyecto*/
@@ -191,12 +202,12 @@ void readLine(char texto[], int tamano){
           texto[count] = c;
           count++;
 
-  } while (c != '\n' && c != EOF && tamano > count );
+  } while (c != '\n' && c != EOF && tamano > count && count < tamano );
   clean_stdin(); 
 }
 
 /*Agregador de tareas*/
-void tareaNueva( char* tarea, char* valor){
+void tareaNueva( char tarea[][500], int valor[]){
 
   int c; 
   int i;
@@ -208,9 +219,12 @@ void tareaNueva( char* tarea, char* valor){
   /*Recorremos la lista de tareas una a una, por cada tarea disponible
   nos mostrara un menu para insertar una nueva tarea */
   for (i=0; (i<20) && (salir!=1); i++){
-    ifItero++;
-    if( *(tarea+i) == '\0'){
+    
+    if( tarea[i][0] == '\0'){
       
+      ifItero++;
+
+      printf("%c\n",tarea[i][0] );
       if(!err){
         printf("%s\n", TEXTO_MENU_NTAREA); 
       }else{
@@ -222,8 +236,9 @@ void tareaNueva( char* tarea, char* valor){
 
       switch(opc){
         case 'N':
-        readLine( (tarea+i), 500 );
-        *(valor+i) = valorar( (tarea+i) );
+        printf("Ingrese la tarea:\n");
+        readLine( tarea[i], 500 );
+        valor[i] = valorar( tarea[i], valor );
         cViejas++;
         break;
         case 'H':
@@ -233,7 +248,7 @@ void tareaNueva( char* tarea, char* valor){
         salir = 1;
         break;
         default:
-        printf("Esa es una opcion incorrecta");
+        printf("Esa es una opcion incorrecta\n");
         err=1;
         --i;
       }
@@ -246,23 +261,27 @@ void tareaNueva( char* tarea, char* valor){
 
 }
 
-int valorar(char * tarea){
+int valorar(char tarea[], int valor[]){
   /*Buscamos por la primera palabra y la igualamos con nuestra lista de tareas*/
-  int valor = cViejas;
+  int vvalor = cViejas;
   int i;
   int x;
   int isthis = 0;
   /*Busca en nuesta lista de palabras (la ultima de la lista esta vacia), en cada palabra
   la compara con nuestra trarea en cuestion solo hasta la primera palabra, si son iguales
   toma a isthis como cierto y termina la iteracion*/
-  for(x=0;palabras[x][0] != '\0' ; x++){
-    for(i=0; (*(tarea+i) != '\n') && (*(tarea+i) != ' ') && (*(tarea+i) != '\0'); i++ ){
-      if( *(tarea+i) == palabras[x][i] ){
+  for(x=0; x < 8 ; x++){
+    if(tarea[i] == ' ' || tarea[i] == '\0' || tarea[i] == '\n'){
+      break;
+    }
+    for(i=0; i<50; i++ ){
+      if( tarea[i] == palabras[x][i]){
         isthis = 1;
       }else{
         isthis = 0;
         break;
       }
+
     }
     if(isthis){
       break;
@@ -270,9 +289,61 @@ int valorar(char * tarea){
   }
   /*Si es que encontramos una palabra isthis tendra un valor 1  y pobremos sumarle el valor*/
   if(isthis){
-    valor = valor + vPalabras[x];
-    return valor;
+    vvalor = vvalor + vPalabras[x];
   }
-  /*Si no es asi, la palabra en cuestion tendra el valor global del contador*/
-  return valor;
+  /*Ninguna tarea debe tener el mismo valor*/
+  for(i=0; i<20  ;i++){
+    if(vvalor == valor[i] ){
+      vvalor++;
+      i=-1;
+    }
+  }
+
+  return vvalor;
+
+}
+
+void borrarTarea(char tarea[][500], int valor[]){
+  mostrarTareas(tarea, valor);
+  int salir=0; 
+  char opc=0;
+  int err=0;
+  do{
+    if(!err){
+      printf("%s\n", TEXTO_MENU_BTAREA); 
+    }else{
+       err=0;
+    }
+
+    scanf("%c", &opc);
+    clean_stdin();
+
+    switch(opc){
+      case 'B':  
+      break;
+      case 'H':
+      printf("%s\n", TEXTO_AYUDA_BTAREAS );
+      break;
+      case 'S':
+      salir = 1;
+      break;
+      default:
+      printf("Esa es una opcion incorrecta");
+      err=1;
+    }
+    
+  }while(!salir);
+
+}
+
+void mostrarTareas(char tarea[][500], int valor[]){
+  int i;
+  int menor = -1;
+  for(i=0; i<20; i++){
+    if(valor[i] > menor){
+      menor = valor[i];
+      printf("%2d . %s", i+1, tarea[i]);
+      i=-1;
+    }
+  }
 }
